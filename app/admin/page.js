@@ -2,10 +2,9 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { collection, addDoc, deleteDoc, doc, query, orderBy, onSnapshot, serverTimestamp } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, db, storage } from "@/lib/firebase";
 
-// Each tab defines its Firestore collection name, its form fields, and how
-// to render a summary line for the list view.
 const TABS = {
   experience: {
     label: "Experience",
@@ -42,6 +41,39 @@ const TABS = {
     ],
     summary: (d) => `${d.title} — ${d.issuer}`,
   },
+  designs: {
+    label: "Designs",
+    collection: "designs",
+    fields: [
+      { key: "title", label: "Design Title" },
+      { key: "category", label: "Category (e.g. Social Media Design)" },
+      { key: "description", label: "Short description (optional)" },
+      { key: "canvaLink", label: "Public Canva link (Share → Anyone with link → Copy)" },
+    ],
+    imageField: "thumbnail",
+    summary: (d) => d.title,
+  },
+  abilities: {
+    label: "Abilities",
+    collection: "abilities",
+    fields: [
+      { key: "icon", label: "Emoji icon (e.g. 🖥️)" },
+      { key: "name", label: "Skill name (e.g. Frontend Development)" },
+      { key: "percent", label: "Skill level 0-100 (e.g. 90)" },
+    ],
+    summary: (d) => `${d.name} — ${d.percent}%`,
+  },
+  services: {
+    label: "What I Do",
+    collection: "services",
+    fields: [
+      { key: "icon", label: "Emoji icon (e.g. 🖥️)" },
+      { key: "title", label: "Service title" },
+      { key: "desc", label: "Description" },
+      { key: "tags", label: "Tags, comma-separated (e.g. Next.js, FastAPI)" },
+    ],
+    summary: (d) => d.title,
+  },
 };
 
 function emptyForm(tabKey) {
@@ -61,7 +93,9 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("experience");
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(emptyForm("experience"));
+  const [imageFile, setImageFile] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [uploadPct, setUploadPct] = useState(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -77,6 +111,7 @@ export default function AdminPage() {
     const q = query(collection(db, tab.collection), orderBy("createdAt", "desc"));
     const unsub = onSnapshot(q, (snap) => setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
     setForm(emptyForm(activeTab));
+    setImageFile(null);
     return () => unsub();
   }, [user, activeTab]);
 
@@ -93,11 +128,32 @@ export default function AdminPage() {
   async function handleAdd(e) {
     e.preventDefault();
     const tab = TABS[activeTab];
-    const requiredFilled = tab.fields.slice(0, 2).every((f) => form[f.key]);
+    const requiredFilled = tab.fields.slice(0, 1).every((f) => form[f.key]);
     if (!requiredFilled) return;
+
     setSaving(true);
-    await addDoc(collection(db, tab.collection), { ...form, createdAt: serverTimestamp() });
-    setForm(emptyForm(activeTab));
+    try {
+      let payload = { ...form, createdAt: serverTimestamp() };
+
+      if (tab.imageField) {
+        if (imageFile) {
+          setUploadPct(0);
+          const fileRef = ref(storage, `${tab.collection}/${Date.now()}-${imageFile.name}`);
+          await uploadBytes(fileRef, imageFile);
+          const url = await getDownloadURL(fileRef);
+          payload[tab.imageField] = url;
+          setUploadPct(null);
+        } else {
+          payload[tab.imageField] = "";
+        }
+      }
+
+      await addDoc(collection(db, tab.collection), payload);
+      setForm(emptyForm(activeTab));
+      setImageFile(null);
+    } catch (err) {
+      alert("Save failed: " + err.message);
+    }
     setSaving(false);
   }
 
@@ -188,6 +244,15 @@ export default function AdminPage() {
             {tab.checkbox.label}
           </label>
         )}
+        {tab.imageField && (
+          <div>
+            <label style={{ fontWeight: 600, fontSize: ".9rem", display: "block", marginBottom: 8 }}>
+              Thumbnail image — export your Canva design as PNG/JPG, then upload it here directly:
+            </label>
+            <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} />
+            {uploadPct !== null && <p style={{ fontSize: ".8rem", color: "var(--ink-soft)" }}>Uploading…</p>}
+          </div>
+        )}
         <button type="submit" disabled={saving} className="btn-primary" style={{ border: "none", cursor: "pointer" }}>
           {saving ? "Saving…" : `Add ${tab.label}`}
         </button>
@@ -201,8 +266,13 @@ export default function AdminPage() {
           </p>
         )}
         {items.map((it) => (
-          <div key={it.id} className="tl-card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ fontWeight: 700 }}>{tab.summary(it)}</div>
+          <div key={it.id} className="tl-card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              {tab.imageField && it[tab.imageField] && (
+                <img src={it[tab.imageField]} alt="" style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 8 }} />
+              )}
+              <div style={{ fontWeight: 700 }}>{tab.summary(it)}</div>
+            </div>
             <button onClick={() => handleDelete(it.id)} style={{ color: "#DC2626", border: "none", background: "none", cursor: "pointer", fontWeight: 600 }}>
               Delete
             </button>

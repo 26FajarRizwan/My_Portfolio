@@ -13,9 +13,10 @@ export default function Hero() {
           <div data-aos="fade-up">
             <div className="eyebrow"><span className="pulse-dot"></span> Open to new opportunities</div>
             <h1>
-              Fajar Rizwan —<br />
+              Fajar Rizwan<br />
               <span className="accent">Full-Stack Developer</span><br />
-              &amp; Agentic AI Engineer
+              Designer<br />
+              <span className="accent">Agentic AI Engineer</span>
             </h1>
             <p className="tagline">
               I architect end-to-end digital solutions that bridge creative design and robust

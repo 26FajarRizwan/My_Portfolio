@@ -31,17 +31,19 @@ Recommended: a square-ish photo, at least 600×600px.
 
 ---
 
-## 3. Update experience / education / certifications
+## 3. Update experience / education / certifications / designs / abilities / services
 
-Two ways to do this now:
+All six of these sections are manageable from **one admin panel** at `/admin`
+(see section 6 below for Firebase setup):
 
-- **Fastest, live, no redeploy:** use the admin panel at `/admin` (see section 7
-  below for Firebase setup). Add or delete entries there and they show up on
-  the public site instantly.
-- **Fallback / starter data:** `data/experience.js` and `data/education.js` are
-  plain arrays of objects — these show automatically until you've added
-  anything through `/admin`. Edit them directly if you'd rather not set up
-  Firebase yet.
+- **Experience, Education, Certifications** — text-based forms
+- **Designs** — form + direct image upload (export your Canva design as PNG/JPG, upload it right there, no external image hosting needed)
+- **Abilities** — skill name + emoji icon + percentage (drives the animated ring chart)
+- **What I Do (Services)** — the 3-panel section, icon + title + description + tags
+
+Until you've added anything through `/admin` for a given section, it falls back
+to starter data already written in the matching file under `data/` (except
+Designs, which shows an empty-state message until you add your first one).
 
 > Note on LinkedIn: LinkedIn does not provide a public API for pulling profile
 > data into a website automatically, so nothing here can auto-sync straight
@@ -72,35 +74,32 @@ git push -u origin main
 
 ---
 
-## 6. Firebase setup (live Experience / Education / Certifications + admin panel)
+## 6. Firebase setup (full admin panel: Experience, Education, Certifications, Designs, Abilities, Services)
 
-The **Experience**, **Education**, and **Certifications** sections are all backed
-by **Firebase Firestore** and update live — no redeploy needed. There's a single
-password-protected admin page at `/admin` (with tabs) for managing all three.
+Every editable section on the site is backed by **Firebase Firestore**, and the
+**Designs** section also uses **Firebase Storage** for direct image uploads
+from the admin panel. Everything updates live — no redeploy needed.
 
-Until you add anything through `/admin`, each section falls back to the starter
-data already written in `data/experience.js` and `data/education.js`, so the
-site never looks empty.
-
-### 7.1 Create the Firebase project
+### 6.1 Create the Firebase project
 
 1. Go to [console.firebase.google.com](https://console.firebase.google.com) → **Add project** → follow the steps (Google Analytics is optional, skip it).
 2. Inside the project: **Build → Firestore Database → Create database** → start in **production mode** → pick any region.
-3. Go to **Project Settings** (gear icon) → **General** → scroll to "Your apps" → click the **Web** icon (`</>`) → register an app (any nickname) → it'll show you a `firebaseConfig` object with your keys.
+3. **Build → Storage → Get started** → start in **production mode** → same region as Firestore.
+4. Go to **Project Settings** (gear icon) → **General** → scroll to "Your apps" → click the **Web** icon (`</>`) → register an app (any nickname) → it'll show you a `firebaseConfig` object with your keys.
 
-### 7.2 Add your keys locally
+### 6.2 Add your keys locally
 
 1. Copy `.env.local.example` to a new file called `.env.local`.
 2. Fill in the values from the `firebaseConfig` object you just got.
 
-### 7.3 Create your admin login
+### 6.3 Create your admin login
 
 1. In Firebase Console → **Build → Authentication → Get started**.
 2. Enable the **Email/Password** sign-in method.
 3. Go to the **Users** tab → **Add user** → enter the email/password you want
    to log in with at `/admin`.
 
-### 7.4 Set Firestore security rules
+### 6.4 Set Firestore security rules
 
 In Firebase Console → **Firestore Database → Rules**, paste this so anyone can
 *read* your content (for the public site) but only your logged-in admin
@@ -110,15 +109,27 @@ account can *write*:
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /experience/{docId} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /education/{docId} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /certifications/{docId} {
+    match /experience/{docId}      { allow read: if true; allow write: if request.auth != null; }
+    match /education/{docId}       { allow read: if true; allow write: if request.auth != null; }
+    match /certifications/{docId}  { allow read: if true; allow write: if request.auth != null; }
+    match /designs/{docId}         { allow read: if true; allow write: if request.auth != null; }
+    match /abilities/{docId}       { allow read: if true; allow write: if request.auth != null; }
+    match /services/{docId}        { allow read: if true; allow write: if request.auth != null; }
+  }
+}
+```
+
+Click **Publish**.
+
+### 6.5 Set Storage security rules (for Designs image upload)
+
+In Firebase Console → **Storage → Rules**, paste this:
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /designs/{fileName} {
       allow read: if true;
       allow write: if request.auth != null;
     }
@@ -128,20 +139,20 @@ service cloud.firestore {
 
 Click **Publish**.
 
-### 7.5 Use it
+### 6.6 Use it
 
 - Run the site locally (`npm run dev`) → go to `http://localhost:3000/admin` → log in with the account you created.
-- Switch between the **Experience / Education / Certifications** tabs, fill the form, click Add.
+- Switch between the tabs (Experience, Education, Certifications, Designs, Abilities, What I Do), fill the form — for Designs, pick an image file directly — click Add.
 - It shows up instantly on the public site — no redeploy needed for content changes.
 - On production (Vercel), the same works at `yourdomain.vercel.app/admin`.
 
-### 7.6 Add the same env vars to Vercel
+### 6.7 Add the same env vars to Vercel
 
 In your Vercel project → **Settings → Environment Variables**, add all six
 `NEXT_PUBLIC_FIREBASE_...` keys from your `.env.local`, then redeploy once.
 
-> Firebase's free "Spark" plan is generous for a personal portfolio (50K reads
-> and 20K writes/day on Firestore) so this should comfortably cover normal use.
+> Firebase's free "Spark" plan is generous for a personal portfolio (50K reads/day
+> on Firestore, 5GB Storage) so this should comfortably cover normal use.
 
 ---
 

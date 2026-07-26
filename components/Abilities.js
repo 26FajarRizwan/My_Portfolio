@@ -1,106 +1,86 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import fallbackAbilities from "@/data/abilities";
 
-const skills = [
-  { icon: "🖥️", name: "Frontend (Next.js / React)", w: 92 },
-  { icon: "⚙️", name: "Backend (Python / FastAPI)", w: 88 },
-  { icon: "🤖", name: "Agentic AI (CrewAI / n8n)", w: 85 },
-  { icon: "🎨", name: "Graphic Design (Figma / Canva)", w: 80 },
-  { icon: "🧱", name: "Foundations (C++ / DSA / DBMS)", w: 83 },
-];
-
-export default function Abilities() {
-  const canvasRef = useRef(null);
-  const barsRef = useRef([]);
-
-  useEffect(() => {
-    let chartInstance;
-    let cancelled = false;
-    import("chart.js/auto").then(({ default: Chart }) => {
-      if (cancelled || !canvasRef.current) return;
-      const existing = Chart.getChart(canvasRef.current);
-      if (existing) existing.destroy();
-      chartInstance = new Chart(canvasRef.current, {
-        type: "radar",
-        data: {
-          labels: ["Frontend", "Backend", "Agentic AI", "Design", "DSA/DBMS", "DevOps"],
-          datasets: [
-            {
-              label: "Skill Level",
-              data: [92, 88, 85, 80, 83, 75],
-              backgroundColor: "rgba(37,99,235,0.18)",
-              borderColor: "#2563EB",
-              borderWidth: 2,
-              pointBackgroundColor: "#1D4ED8",
-              pointRadius: 4,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          scales: {
-            r: {
-              suggestedMin: 0,
-              suggestedMax: 100,
-              grid: { color: "#E4E9FB" },
-              angleLines: { color: "#E4E9FB" },
-              pointLabels: { font: { size: 12, weight: "600" } },
-              ticks: { display: false },
-            },
-          },
-          plugins: { legend: { display: false } },
-        },
-      });
-    });
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.style.width = e.target.dataset.w + "%";
-            observer.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.4 }
-    );
-    barsRef.current.forEach((b) => b && observer.observe(b));
-
-    return () => {
-      cancelled = true;
-      if (chartInstance) chartInstance.destroy();
-    };
-  }, []);
+function Ring({ percent, animate }) {
+  const size = 128;
+  const stroke = 10;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const offset = c - (animate ? percent : 0) / 100 * c;
 
   return (
-    <section id="abilities" style={{ background: "var(--bg-panel)" }}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      <defs>
+        <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#2563EB" />
+          <stop offset="100%" stopColor="#38BDF8" />
+        </linearGradient>
+      </defs>
+      <circle cx={size / 2} cy={size / 2} r={r} stroke="#E4E9FB" strokeWidth={stroke} fill="none" />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        stroke="url(#ringGradient)"
+        strokeWidth={stroke}
+        fill="none"
+        strokeDasharray={c}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        style={{ transition: "stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)", transform: "rotate(-90deg)", transformOrigin: "50% 50%" }}
+      />
+      <text x="50%" y="50%" textAnchor="middle" dy=".35em" fontSize="22" fontWeight="700" fill="var(--ink)" fontFamily="Space Grotesk">
+        {animate ? percent : 0}%
+      </text>
+    </svg>
+  );
+}
+
+export default function Abilities() {
+  const [items, setItems] = useState(null);
+  const [animate, setAnimate] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    try {
+      const q = query(collection(db, "abilities"), orderBy("createdAt", "desc"));
+      const unsub = onSnapshot(q, (snap) => setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), () => setItems([]));
+      return () => unsub();
+    } catch (e) {
+      setItems([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setAnimate(true)),
+      { threshold: 0.3 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const list = items && items.length > 0 ? items : fallbackAbilities;
+
+  return (
+    <section id="abilities" style={{ background: "var(--bg-panel)" }} ref={sectionRef}>
       <div className="wrap">
         <div className="section-head" data-aos="fade-up">
           <div className="tag">Abilities</div>
           <h2>What This Portfolio &amp; I Can Do</h2>
-          <p>A quick figure of my core technical strengths, visualized.</p>
+          <p>Managed from the admin panel — a live figure of my core technical strengths.</p>
         </div>
-        <div className="abilities-grid">
-          <div className="chart-card" data-aos="fade-right">
-            <canvas ref={canvasRef} height={280}></canvas>
-          </div>
-          <div className="ability-list" data-aos="fade-left">
-            {skills.map((s, i) => (
-              <div className="ability-row" key={s.name}>
-                <div className="ability-icon">{s.icon}</div>
-                <div style={{ flex: 1 }}>
-                  <div className="ability-name">{s.name}</div>
-                  <div className="ability-bar-bg">
-                    <div
-                      className="ability-bar-fill"
-                      data-w={s.w}
-                      ref={(el) => (barsRef.current[i] = el)}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="ring-grid" data-aos="fade-up">
+          {list.map((s, i) => (
+            <div className="ring-card" key={s.id || i}>
+              <Ring percent={Number(s.percent) || 0} animate={animate} />
+              <div className="ring-icon">{s.icon}</div>
+              <div className="ring-name">{s.name}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
