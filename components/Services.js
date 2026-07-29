@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import fallbackServices from "@/data/services";
 
@@ -9,8 +9,20 @@ export default function Services() {
 
   useEffect(() => {
     try {
-      const q = query(collection(db, "services"), orderBy("createdAt", "desc"));
-      const unsub = onSnapshot(q, (snap) => setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), () => setItems([]));
+      const colRef = collection(db, "services");
+      const unsub = onSnapshot(
+        colRef,
+        (snap) => {
+          const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          list.sort((a, b) => {
+            const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+            const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+            return bt - at;
+          });
+          setItems(list);
+        },
+        () => setItems([])
+      );
       return () => unsub();
     } catch (e) {
       setItems([]);

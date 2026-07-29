@@ -13,7 +13,7 @@ export default function Contact() {
             </div>
           </div>
           <div className="contact-links">
-            <a href="https://www.linkedin.com/in/fajar-rizwan-10a657374" target="_blank" rel="noreferrer">🔗 linkedin.com/in/fajar-rizwan-10a657374</a>
+            <a href="https://www.linkedin.com/in/fajar-rizwan-0220aug" target="_blank" rel="noreferrer">🔗 linkedin.com/in/fajar-rizwan-0220aug</a>
             <a href="https://github.com/26FajarRizwan" target="_blank" rel="noreferrer">💻 github.com/26FajarRizwan</a>
             <a href="mailto:itsfjr20@gmail.com">✉️ itsfjr20@gmail.com</a>
             <a href="tel:03210808786">📞 0321-0808786</a>

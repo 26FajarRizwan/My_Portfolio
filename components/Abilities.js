@@ -1,43 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import fallbackAbilities from "@/data/abilities";
-
-function Ring({ percent, animate }) {
-  const size = 128;
-  const stroke = 10;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const offset = c - (animate ? percent : 0) / 100 * c;
-
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      <defs>
-        <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#2563EB" />
-          <stop offset="100%" stopColor="#38BDF8" />
-        </linearGradient>
-      </defs>
-      <circle cx={size / 2} cy={size / 2} r={r} stroke="#E4E9FB" strokeWidth={stroke} fill="none" />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        stroke="url(#ringGradient)"
-        strokeWidth={stroke}
-        fill="none"
-        strokeDasharray={c}
-        strokeDashoffset={offset}
-        strokeLinecap="round"
-        style={{ transition: "stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)", transform: "rotate(-90deg)", transformOrigin: "50% 50%" }}
-      />
-      <text x="50%" y="50%" textAnchor="middle" dy=".35em" fontSize="22" fontWeight="700" fill="var(--ink)" fontFamily="Space Grotesk">
-        {animate ? percent : 0}%
-      </text>
-    </svg>
-  );
-}
 
 export default function Abilities() {
   const [items, setItems] = useState(null);
@@ -46,8 +11,20 @@ export default function Abilities() {
 
   useEffect(() => {
     try {
-      const q = query(collection(db, "abilities"), orderBy("createdAt", "desc"));
-      const unsub = onSnapshot(q, (snap) => setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), () => setItems([]));
+      const colRef = collection(db, "abilities");
+      const unsub = onSnapshot(
+        colRef,
+        (snap) => {
+          const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          list.sort((a, b) => {
+            const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+            const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+            return bt - at;
+          });
+          setItems(list);
+        },
+        () => setItems([])
+      );
       return () => unsub();
     } catch (e) {
       setItems([]);
@@ -57,7 +34,7 @@ export default function Abilities() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((e) => e.isIntersecting && setAnimate(true)),
-      { threshold: 0.3 }
+      { threshold: 0.2 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
@@ -69,15 +46,24 @@ export default function Abilities() {
     <section id="abilities" style={{ background: "var(--bg-panel)" }} ref={sectionRef}>
       <div className="wrap">
         <div className="section-head" data-aos="fade-up">
-          <div className="tag">Abilities</div>
+          <div className="tag">My Skills</div>
           <h2>What This Portfolio &amp; I Can Do</h2>
           <p>Managed from the admin panel — a live figure of my core technical strengths.</p>
         </div>
-        <div className="ring-grid" data-aos="fade-up">
+        <div className="ring-grid">
           {list.map((s, i) => (
-            <div className="ring-card" key={s.id || i}>
-              <Ring percent={Number(s.percent) || 0} animate={animate} />
-              <div className="ring-icon">{s.icon}</div>
+            <div
+              className="ring-card"
+              key={s.id || i}
+              style={{
+                opacity: animate ? 1 : 0,
+                transform: animate ? "translateY(0) scale(1)" : "translateY(14px) scale(.9)",
+                transition: `opacity .5s ease ${i * 0.07}s, transform .5s cubic-bezier(.34,1.56,.64,1) ${i * 0.07}s`,
+              }}
+            >
+              <div className="ring-icon-badge">
+                <span className="ring-icon">{s.icon}</span>
+              </div>
               <div className="ring-name">{s.name}</div>
             </div>
           ))}

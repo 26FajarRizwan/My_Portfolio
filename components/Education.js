@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import fallbackEducation from "@/data/education";
 
@@ -9,10 +9,18 @@ export default function Education() {
 
   useEffect(() => {
     try {
-      const q = query(collection(db, "education"), orderBy("createdAt", "desc"));
+      const colRef = collection(db, "education");
       const unsub = onSnapshot(
-        q,
-        (snap) => setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+        colRef,
+        (snap) => {
+          const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          list.sort((a, b) => {
+            const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+            const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+            return bt - at;
+          });
+          setItems(list);
+        },
         () => setItems([])
       );
       return () => unsub();

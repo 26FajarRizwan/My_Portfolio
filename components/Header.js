@@ -34,7 +34,7 @@ export default function Header() {
             </a>
           ))}
         </div>
-        <a href="#contact" className="btn-primary" style={{ textAlign: "center", marginTop: 10 }} onClick={() => setOpen(false)}>
+        <a href="#contact" className="btn-primary" style={{ textAlign: "center", marginTop: 10, flexShrink: 0 }} onClick={() => setOpen(false)}>
           Let&apos;s Connect
         </a>
       </div>

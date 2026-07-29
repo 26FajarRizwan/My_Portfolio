@@ -24,7 +24,7 @@ export default function Footer() {
           </div>
           <div>
             <h4>Connect</h4>
-            <a href="https://www.linkedin.com/in/fajar-rizwan-10a657374" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/fajar-rizwan-0220aug" target="_blank" rel="noreferrer">LinkedIn</a>
             <a href="https://github.com/26FajarRizwan" target="_blank" rel="noreferrer">GitHub</a>
             <a href="mailto:itsfjr20@gmail.com">Email</a>
           </div>

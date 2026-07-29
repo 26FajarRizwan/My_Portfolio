@@ -6,8 +6,8 @@ export default function Hero() {
 
   return (
     <section className="hero">
-      <div className="blob" style={{ width: 420, height: 420, background: "#6366F1", top: -100, left: -140 }} />
-      <div className="blob" style={{ width: 380, height: 380, background: "#1E3A8A", top: 60, right: -120 }} />
+      <div className="blob" style={{ width: 420, height: 420, background: "#7C3AED", top: -100, left: -140 }} />
+      <div className="blob" style={{ width: 380, height: 380, background: "#38BDF8", top: 60, right: -120 }} />
       <div className="wrap">
         <div className="hero-grid">
           <div data-aos="fade-up">

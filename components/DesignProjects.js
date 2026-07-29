@@ -1,15 +1,28 @@
 "use client";
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import ImageCarousel from "@/components/ImageCarousel";
 
 export default function DesignProjects() {
   const [items, setItems] = useState(null);
 
   useEffect(() => {
     try {
-      const q = query(collection(db, "designs"), orderBy("createdAt", "desc"));
-      const unsub = onSnapshot(q, (snap) => setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), () => setItems([]));
+      const colRef = collection(db, "designs");
+      const unsub = onSnapshot(
+        colRef,
+        (snap) => {
+          const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          list.sort((a, b) => {
+            const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+            const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+            return bt - at;
+          });
+          setItems(list);
+        },
+        () => setItems([])
+      );
       return () => unsub();
     } catch (e) {
       setItems([]);
@@ -27,7 +40,7 @@ export default function DesignProjects() {
               <span className="badge-live"><span className="pulse-dot" style={{ background: "#15803D" }}></span> live-synced</span>
             )}
           </h2>
-          <p>Added from the admin panel — upload a thumbnail and your public Canva link, it appears here instantly.</p>
+          <p>Added from the admin panel — paste one or more image links (comma-separated) for a swipeable gallery per project.</p>
         </div>
 
         <div className="design-grid" data-aos="fade-up">
@@ -37,23 +50,29 @@ export default function DesignProjects() {
               No designs added yet — add your first one from <code className="mono">/admin</code> → Designs tab.
             </p>
           )}
-          {items && items.map((d) => (
-            <div className="design-card" key={d.id}>
-              <div className="design-thumb">
-                {d.thumbnail ? <img src={d.thumbnail} alt={d.title} /> : "🎨"}
+          {items && items.map((d) => {
+            const images = (d.thumbnail || "")
+              .split(",")
+              .map((u) => u.trim())
+              .filter(Boolean);
+            return (
+              <div className="design-card" key={d.id}>
+                <div className="design-thumb">
+                  <ImageCarousel images={images} alt={d.title} />
+                </div>
+                <div className="design-body">
+                  {d.category && <div className="cat">{d.category}</div>}
+                  <h4>{d.title}</h4>
+                  {d.description && <p>{d.description}</p>}
+                  {d.canvaLink && (
+                    <a href={d.canvaLink} target="_blank" rel="noreferrer" className="btn-ghost" style={{ padding: "8px 18px", fontSize: ".85rem" }}>
+                      View on Canva →
+                    </a>
+                  )}
+                </div>
               </div>
-              <div className="design-body">
-                {d.category && <div className="cat">{d.category}</div>}
-                <h4>{d.title}</h4>
-                {d.description && <p>{d.description}</p>}
-                {d.canvaLink && (
-                  <a href={d.canvaLink} target="_blank" rel="noreferrer" className="btn-ghost" style={{ padding: "8px 18px", fontSize: ".85rem" }}>
-                    View on Canva →
-                  </a>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
