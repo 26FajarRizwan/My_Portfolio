@@ -5,16 +5,30 @@ const GITHUB_USERNAME = "26FajarRizwan";
 
 export default function Projects() {
   const [repos, setRepos] = useState(null);
-  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
     fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=6`)
-      .then((res) => {
-        if (!res.ok) throw new Error("GitHub API error");
+      .then(async (res) => {
+        if (res.status === 403) {
+          const remaining = res.headers.get("x-ratelimit-remaining");
+          throw new Error(
+            remaining === "0"
+              ? "GitHub API rate limit reached for this network (60 requests/hour without login). Try again later, or from a different network."
+              : "GitHub API blocked the request (403)."
+          );
+        }
+        if (res.status === 404) {
+          throw new Error(`GitHub user "${GITHUB_USERNAME}" not found — check the username is correct.`);
+        }
+        if (!res.ok) throw new Error(`GitHub API returned status ${res.status}.`);
         return res.json();
       })
       .then((data) => setRepos(Array.isArray(data) ? data.filter((r) => !r.fork).slice(0, 6) : []))
-      .catch(() => setError(true));
+      .catch((err) => {
+        console.error("GitHub fetch failed:", err.message);
+        setErrorMsg(err.message);
+      });
   }, []);
 
   return (
@@ -30,13 +44,17 @@ export default function Projects() {
         </div>
 
         <div className="proj-grid">
-          {error && (
-            <p style={{ color: "var(--ink-soft)", gridColumn: "1/-1", textAlign: "center" }}>
-              Could not load live repos right now — check github.com/{GITHUB_USERNAME} directly.
-            </p>
+          {errorMsg && (
+            <div style={{ gridColumn: "1/-1", textAlign: "center", color: "var(--ink-soft)" }}>
+              <p>Could not load live repos right now.</p>
+              <p style={{ fontSize: ".82rem", marginTop: 6 }}>{errorMsg}</p>
+              <p style={{ fontSize: ".82rem", marginTop: 6 }}>
+                Check <a href={`https://github.com/${GITHUB_USERNAME}`} target="_blank" rel="noreferrer" style={{ color: "var(--deep)", fontWeight: 600 }}>github.com/{GITHUB_USERNAME}</a> directly.
+              </p>
+            </div>
           )}
 
-          {!repos && !error && (
+          {!repos && !errorMsg && (
             <>
               <div className="loading-skel"></div>
               <div className="loading-skel"></div>
