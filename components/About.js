@@ -1,6 +1,15 @@
 "use client";
 import { useState } from "react";
-import { GraduationCap, Wrench, Monitor, Settings, Bot, Blocks, Palette, Cloud } from "lucide-react";
+import { GraduationCap, Wrench, Monitor, Settings, Bot, Blocks, Palette, Cloud, Layers, Code2, PenTool, Users } from "lucide-react";
+
+const points = [
+  { Icon: Layers, text: "I architect end-to-end digital solutions that bridge creative design and robust backend engineering." },
+  { Icon: Code2, text: "Started with C++, Data Structures and DBMS — then moved into modern full-stack development and Agentic AI." },
+  { Icon: Monitor, text: "I build secure, high-performance web apps with Next.js + Tailwind CSS on the frontend and Python FastAPI on the backend." },
+  { Icon: Bot, text: "I design autonomous multi-agent systems using CrewAI — intelligent workflows that automate real-world processes." },
+  { Icon: PenTool, text: "My graphic design background means I care as much about typography and UI/UX as I do about clean code." },
+  { Icon: Users, text: "Always open to connecting with developers and tech enthusiasts about Full-Stack, Agentic AI, or architecture." },
+];
 
 export default function About() {
   const [imgOk, setImgOk] = useState(true);
@@ -18,16 +27,18 @@ export default function About() {
             {imgOk ? (
               <img src="/profile.jpg" alt="" onError={() => setImgOk(false)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (
-              <GraduationCap size={90} strokeWidth={1.2} color="var(--ink-soft)" />
+              <GraduationCap size={64} strokeWidth={1.2} color="var(--ink-soft)" />
             )}
           </div>
           <div className="about-text" data-aos="fade-left">
-            <p>I don&apos;t just write code; I architect end-to-end digital solutions that bridge the gap between creative design and robust backend engineering.</p>
-            <p>Currently pursuing my degree at Lahore Garrison University, my tech journey started with the fundamentals of C++, Data Structures and DBMS. However, my curiosity quickly drove me into the world of modern full-stack development and Agentic AI.</p>
-            <p>Today, I build secure, high-performance web applications using Next.js and Tailwind CSS on the frontend, powered by lightning-fast Python FastAPI pipelines on the backend — complete with custom JSON file-system storage and protected client-side authentication loops.</p>
-            <p>Beyond traditional development, I am heavily invested in the future of AI. I design autonomous multi-agent systems using CrewAI — intelligent workflows that automate complex processes. Whether it&apos;s coding a production-ready enterprise portal from scratch or utilizing smart automation, I focus on building things that actually deliver value.</p>
-            <p>My background as a graphic designer gives me a unique edge: I don&apos;t just understand data streams and API routing — I also care deeply about typography, intuitive UI layouts, and seamless user experiences.</p>
-            <p>I am always open to connecting with fellow developers, tech enthusiasts and creators. Let&apos;s connect and talk about Full-Stack, Agentic AI, or software architecture!</p>
+            <ul className="about-points">
+              {points.map((p, i) => (
+                <li key={i}>
+                  <span className="about-point-icon"><p.Icon size={18} strokeWidth={1.8} /></span>
+                  <span>{p.text}</span>
+                </li>
+              ))}
+            </ul>
 
             <h4 style={{ display: "flex", alignItems: "center", gap: 8 }}><Wrench size={18} /> Core Toolkit</h4>
             <div className="toolkit-grid">
