@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import fallbackAbilities from "@/data/abilities";
+import { AppIcon } from "@/lib/icons";
 
 export default function Abilities() {
   const [items, setItems] = useState(null);
@@ -57,12 +58,12 @@ export default function Abilities() {
               key={s.id || i}
               style={{
                 opacity: animate ? 1 : 0,
-                transform: animate ? "translateY(0) scale(1)" : "translateY(14px) scale(.9)",
-                transition: `opacity .5s ease ${i * 0.07}s, transform .5s cubic-bezier(.34,1.56,.64,1) ${i * 0.07}s`,
+                transform: animate ? "translateY(0)" : "translateY(16px)",
+                transition: `opacity .5s ease ${i * 0.06}s, transform .5s cubic-bezier(.22,1,.36,1) ${i * 0.06}s`,
               }}
             >
               <div className="ring-icon-badge">
-                <span className="ring-icon">{s.icon}</span>
+                <AppIcon name={s.icon} size={26} strokeWidth={1.8} color="var(--deep)" />
               </div>
               <div className="ring-name">{s.name}</div>
             </div>

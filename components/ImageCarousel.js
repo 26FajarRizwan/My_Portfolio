@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
+import { ImageOff } from "lucide-react";
 
 export default function ImageCarousel({ images, alt }) {
   const [index, setIndex] = useState(0);
   const [broken, setBroken] = useState({});
 
   if (!images || images.length === 0) {
-    return <span style={{ fontSize: "2.5rem" }}>🎨</span>;
+    return <ImageOff size={36} strokeWidth={1.3} color="var(--ink-soft)" />;
   }
 
   const safeIndex = Math.min(index, images.length - 1);
@@ -25,7 +26,7 @@ export default function ImageCarousel({ images, alt }) {
   return (
     <div className="carousel">
       {isBroken || !current ? (
-        <span style={{ fontSize: "2.5rem" }}>🎨</span>
+        <ImageOff size={36} strokeWidth={1.3} color="var(--ink-soft)" />
       ) : (
         <img src={current} alt={alt} onError={() => setBroken((b) => ({ ...b, [safeIndex]: true }))} />
       )}

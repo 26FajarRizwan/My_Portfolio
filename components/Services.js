@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import fallbackServices from "@/data/services";
+import { AppIcon } from "@/lib/icons";
 
 export default function Services() {
   const [items, setItems] = useState(null);
@@ -42,7 +43,7 @@ export default function Services() {
         <div className="panel3">
           {list.map((p, i) => (
             <div className="panel-card" data-aos="fade-up" data-aos-delay={i * 100} key={p.id || i}>
-              <div className="panel-icon">{p.icon}</div>
+              <div className="panel-icon"><AppIcon name={p.icon} size={26} strokeWidth={1.8} color="#fff" /></div>
               <h3>{p.title}</h3>
               <p>{p.desc}</p>
               <div className="panel-tags">

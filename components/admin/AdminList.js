@@ -1,3 +1,5 @@
+import { AppIcon, ICON_MAP } from "@/lib/icons";
+
 export default function AdminList({ items, summary, onEdit, onDelete }) {
   if (items.length === 0) {
     return (
@@ -11,6 +13,7 @@ export default function AdminList({ items, summary, onEdit, onDelete }) {
     <div style={{ display: "grid", gap: 12 }}>
       {items.map((it) => {
         const firstImage = it.thumbnail ? it.thumbnail.split(",")[0].trim() : null;
+        const hasIcon = it.icon && ICON_MAP[it.icon];
         return (
           <div
             key={it.id}
@@ -25,6 +28,11 @@ export default function AdminList({ items, summary, onEdit, onDelete }) {
                   onError={(e) => (e.currentTarget.style.display = "none")}
                   style={{ width: 44, height: 44, objectFit: "cover", borderRadius: 8, flexShrink: 0 }}
                 />
+              )}
+              {hasIcon && (
+                <div style={{ width: 40, height: 40, borderRadius: 8, background: "var(--bg-panel-2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <AppIcon name={it.icon} size={20} color="var(--deep)" />
+                </div>
               )}
               <div style={{ fontWeight: 700 }}>{summary(it)}</div>
             </div>

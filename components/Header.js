@@ -1,16 +1,17 @@
 "use client";
 import { useState } from "react";
+import { User, BarChart3, Layers, Briefcase, GraduationCap, Award, Code2, Palette, Mail, Menu } from "lucide-react";
 
 const links = [
-  { id: "about", label: "About", icon: "👤" },
-  { id: "abilities", label: "Abilities", icon: "📊" },
-  { id: "services", label: "What I Do", icon: "🧩" },
-  { id: "experience", label: "Experience", icon: "💼" },
-  { id: "education", label: "Education", icon: "🎓" },
-  { id: "certifications", label: "Certifications", icon: "📜" },
-  { id: "projects", label: "Projects", icon: "💻" },
-  { id: "designs", label: "Designs", icon: "🎨" },
-  { id: "contact", label: "Contact", icon: "✉️" },
+  { id: "about", label: "About", Icon: User },
+  { id: "abilities", label: "Abilities", Icon: BarChart3 },
+  { id: "services", label: "What I Do", Icon: Layers },
+  { id: "experience", label: "Experience", Icon: Briefcase },
+  { id: "education", label: "Education", Icon: GraduationCap },
+  { id: "certifications", label: "Certifications", Icon: Award },
+  { id: "projects", label: "Projects", Icon: Code2 },
+  { id: "designs", label: "Designs", Icon: Palette },
+  { id: "contact", label: "Contact", Icon: Mail },
 ];
 
 export default function Header() {
@@ -30,7 +31,7 @@ export default function Header() {
         <div className="sidebar-links">
           {links.map((l) => (
             <a key={l.id} href={`#${l.id}`} onClick={() => setOpen(false)}>
-              <span className="sidebar-icon">{l.icon}</span> {l.label}
+              <span className="sidebar-icon"><l.Icon size={18} strokeWidth={2} /></span> {l.label}
             </a>
           ))}
         </div>
@@ -55,7 +56,7 @@ export default function Header() {
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <a href="#contact" className="nav-cta">Let&apos;s Connect</a>
             <div className="burger" onClick={() => setOpen(!open)} aria-label="Open menu">
-              <span></span><span></span><span></span>
+              <Menu size={22} strokeWidth={2} color="var(--ink)" />
             </div>
           </div>
         </div>

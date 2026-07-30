@@ -1,3 +1,5 @@
+import { Linkedin, Github, Mail, Phone } from "lucide-react";
+
 export default function Contact() {
   return (
     <section id="contact">
@@ -13,10 +15,10 @@ export default function Contact() {
             </div>
           </div>
           <div className="contact-links">
-            <a href="https://www.linkedin.com/in/fajar-rizwan-0220aug" target="_blank" rel="noreferrer">🔗 linkedin.com/in/fajar-rizwan-0220aug</a>
-            <a href="https://github.com/26FajarRizwan" target="_blank" rel="noreferrer">💻 github.com/26FajarRizwan</a>
-            <a href="mailto:itsfjr20@gmail.com">✉️ itsfjr20@gmail.com</a>
-            <a href="tel:03210808786">📞 0321-0808786</a>
+            <a href="https://www.linkedin.com/in/fajar-rizwan-0220aug" target="_blank" rel="noreferrer"><Linkedin size={18} /> linkedin.com/in/fajar-rizwan-0220aug</a>
+            <a href="https://github.com/26FajarRizwan" target="_blank" rel="noreferrer"><Github size={18} /> github.com/26FajarRizwan</a>
+            <a href="mailto:itsfjr20@gmail.com"><Mail size={18} /> itsfjr20@gmail.com</a>
+            <a href="tel:03210808786"><Phone size={18} /> 0321-0808786</a>
           </div>
         </div>
       </div>

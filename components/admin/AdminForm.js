@@ -40,15 +40,29 @@ export default function AdminForm({ fields, checkbox, editingItem, onSubmit, onC
     <form onSubmit={handleSubmit} className="chart-card" style={{ display: "grid", gap: 14, marginBottom: 40 }}>
       <h3 style={{ marginBottom: 4 }}>{editingItem ? `Edit ${label}` : `Add ${label}`}</h3>
 
-      {fields.map((f) => (
-        <input
-          key={f.key}
-          placeholder={f.label}
-          value={form[f.key] ?? ""}
-          onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-          style={{ padding: 12, borderRadius: 10, border: "1px solid var(--line)" }}
-        />
-      ))}
+      {fields.map((f) =>
+        f.type === "select" ? (
+          <select
+            key={f.key}
+            value={form[f.key] ?? ""}
+            onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+            style={{ padding: 12, borderRadius: 10, border: "1px solid var(--line)" }}
+          >
+            <option value="">{f.label}</option>
+            {f.options.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        ) : (
+          <input
+            key={f.key}
+            placeholder={f.label}
+            value={form[f.key] ?? ""}
+            onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+            style={{ padding: 12, borderRadius: 10, border: "1px solid var(--line)" }}
+          />
+        )
+      )}
 
       {checkbox && (
         <label style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 600, fontSize: ".9rem" }}>
