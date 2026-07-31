@@ -1,11 +1,17 @@
-// Icon values match the dropdown options in lib/icons.js (ICON_OPTIONS).
+// category must match one of the values in lib/skillCategories.js
 const abilities = [
-  { icon: "monitor", name: "Frontend (Next.js / React)", percent: 92 },
-  { icon: "server", name: "Backend (Python / FastAPI)", percent: 88 },
-  { icon: "bot", name: "Agentic AI (CrewAI / n8n)", percent: 85 },
-  { icon: "palette", name: "Graphic Design (Figma / Canva)", percent: 80 },
-  { icon: "boxes", name: "Foundations (C++ / DSA / DBMS)", percent: 83 },
-  { icon: "cloud", name: "Deployment (Vercel / Firebase)", percent: 78 },
+  { category: "Frontend", name: "Next.js / React", core: true },
+  { category: "Frontend", name: "Tailwind CSS", core: false },
+  { category: "Backend", name: "Python / FastAPI", core: true },
+  { category: "Backend", name: "REST API design", core: false },
+  { category: "AI & Automation", name: "CrewAI (multi-agent systems)", core: true },
+  { category: "AI & Automation", name: "n8n workflow automation", core: false },
+  { category: "Design", name: "Figma", core: false },
+  { category: "Design", name: "Canva", core: false },
+  { category: "DevOps & Deployment", name: "Vercel", core: false },
+  { category: "DevOps & Deployment", name: "Firebase", core: false },
+  { category: "Foundations", name: "C++ / Data Structures", core: false },
+  { category: "Foundations", name: "Database design (DBMS)", core: false },
 ];
 
 export default abilities;

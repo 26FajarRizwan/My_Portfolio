@@ -1,14 +1,12 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import fallbackAbilities from "@/data/abilities";
-import { AppIcon } from "@/lib/icons";
+import { CATEGORY_OPTIONS } from "@/lib/skillCategories";
 
 export default function Abilities() {
   const [items, setItems] = useState(null);
-  const [animate, setAnimate] = useState(false);
-  const sectionRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -32,40 +30,42 @@ export default function Abilities() {
     }
   }, []);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && setAnimate(true)),
-      { threshold: 0.2 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
-
   const list = items && items.length > 0 ? items : fallbackAbilities;
 
+  // Group flat skill list into { category: [skills] }
+  const grouped = {};
+  list.forEach((s) => {
+    const cat = s.category || "Other";
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(s);
+  });
+
+  // Keep a stable, sensible category order; anything unexpected goes last.
+  const orderedCategories = [
+    ...CATEGORY_OPTIONS.map((c) => c.value).filter((c) => grouped[c]),
+    ...Object.keys(grouped).filter((c) => !CATEGORY_OPTIONS.some((o) => o.value === c)),
+  ];
+
   return (
-    <section id="abilities" style={{ background: "var(--bg-panel)" }} ref={sectionRef}>
+    <section id="abilities" style={{ background: "var(--bg-panel)" }}>
       <div className="wrap">
-        <div className="section-head" data-aos="fade-up">
-          <div className="tag">My Skills</div>
-          <h2>What This Portfolio &amp; I Can Do</h2>
-          <p>Managed from the admin panel — a live figure of my core technical strengths.</p>
+        <div className="section-head" data-aos="fade-up" data-aos-duration="300">
+          <div className="tag">Skills</div>
+          <h2>What I work with</h2>
+          <p>Grouped by area, strongest ones marked.</p>
         </div>
-        <div className="ring-grid">
-          {list.map((s, i) => (
-            <div
-              className="ring-card"
-              key={s.id || i}
-              style={{
-                opacity: animate ? 1 : 0,
-                transform: animate ? "translateY(0)" : "translateY(16px)",
-                transition: `opacity .5s ease ${i * 0.06}s, transform .5s cubic-bezier(.22,1,.36,1) ${i * 0.06}s`,
-              }}
-            >
-              <div className="ring-icon-badge">
-                <AppIcon name={s.icon} size={26} strokeWidth={1.8} color="var(--deep)" />
-              </div>
-              <div className="ring-name">{s.name}</div>
+        <div className="skills-groups">
+          {orderedCategories.map((cat) => (
+            <div className="skill-group" key={cat} data-aos="fade-up" data-aos-duration="300">
+              <h3>{cat}</h3>
+              <ul className="skill-list">
+                {grouped[cat].map((s, i) => (
+                  <li key={s.id || i} className={s.core ? "core" : ""}>
+                    <span>{s.name}</span>
+                    {s.core && <span className="badge">core</span>}
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>

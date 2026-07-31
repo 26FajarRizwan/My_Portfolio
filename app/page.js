@@ -16,7 +16,7 @@ import Footer from "@/components/Footer";
 export default function Home() {
   useEffect(() => {
     import("aos").then(({ default: AOS }) => {
-      AOS.init({ duration: 700, once: true, offset: 60 });
+      AOS.init({ duration: 280, once: true, offset: 40, easing: "ease-out" });
     });
   }, []);
 
