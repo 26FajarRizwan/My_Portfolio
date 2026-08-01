@@ -12,7 +12,12 @@ export default function Hero() {
         <div className="hero-grid">
           <div data-aos="fade-up" data-aos-duration="300">
             <div className="eyebrow"><span className="pulse-dot"></span> Open to work</div>
-            <h1>Fajar Rizwan</h1>
+            <h1>
+              Fajar Rizwan<br />
+              <span className="accent">Full-Stack Developer</span><br />
+              Designer<br />
+              <span className="accent">Agentic AI Engineer</span>
+            </h1>
             <p className="tagline">
               Full-stack developer building fast, reliable products with Next.js, FastAPI and agentic AI systems.
             </p>
