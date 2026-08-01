@@ -40,7 +40,6 @@ export default function DesignProjects() {
               <span className="badge-live"><span className="pulse-dot" style={{ background: "#15803D" }}></span> live-synced</span>
             )}
           </h2>
-          <p>Added from the admin panel — paste one or more image links (comma-separated) for a swipeable gallery per project.</p>
         </div>
 
         <div className="design-grid" data-aos="fade-up">

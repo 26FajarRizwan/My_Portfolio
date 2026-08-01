@@ -1,5 +1,8 @@
 import "./globals.css";
 import "aos/dist/aos.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import AosInit from "@/components/AosInit";
 
 export const metadata = {
   title: "Fajar Rizwan — Full-Stack Developer & Agentic AI Engineer",
@@ -10,7 +13,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AosInit />
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

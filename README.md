@@ -157,16 +157,27 @@ In your Vercel project → **Settings → Environment Variables**, add all six
 
 ## Project structure
 
+The site is now **multi-page** — each main section lives on its own route
+instead of one long scrolling page. Header and Footer are shared across every
+page via `app/layout.js`.
+
 ```
-app/                → Next.js App Router pages & global styles
-app/admin/page.js   → Admin panel (auth + tab switcher)
-components/         → Public site sections (Header, Hero, About, Projects, etc.)
-components/admin/   → Reusable admin UI: AdminForm, AdminList, AdminSection
-lib/firebase.js     → Firebase app/auth/Firestore setup
+app/layout.js       → Shared Header + Footer + AOS init for every page
+app/page.js          → Home ("/") — Hero only
+app/about/page.js     → About ("/about")
+app/skills/page.js    → Skills ("/skills") — Abilities + What I Do
+app/experience/page.js→ Experience ("/experience") — Experience + Education + Certifications
+app/projects/page.js  → Projects ("/projects") — live GitHub repos + Designs gallery
+app/contact/page.js   → Contact ("/contact")
+app/admin/page.js     → Admin panel (auth + tab switcher) — also gets the shared Header/Footer
+components/           → Section components (Header, Hero, About, Projects, etc.)
+components/admin/     → Reusable admin UI: AdminForm, AdminList, AdminSection
+lib/firebase.js       → Firebase app/auth/Firestore setup
 lib/useFirestoreCrud.js → Generic real-time CRUD hook used by every admin tab
-lib/adminTabs.js    → Field config for each admin-manageable section
-data/                → Fallback/starter content: experience.js, education.js, abilities.js, services.js
-public/              → Static assets: profile.jpg
+lib/adminTabs.js      → Field config for each admin-manageable section
+lib/skillCategories.js → Category options for the Skills section
+data/                 → Fallback/starter content: experience.js, education.js, abilities.js, services.js
+public/               → Static assets: profile.jpg
 ```
 
 ---

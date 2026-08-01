@@ -44,7 +44,6 @@ export default function Experience() {
               <span className="badge-live"><span className="pulse-dot" style={{ background: "#15803D" }}></span> live-synced</span>
             )}
           </h2>
-          <p>Managed from the admin panel at <code className="mono">/admin</code>.</p>
         </div>
         <div className="timeline" data-aos="fade-up">
           {list.map((e, i) => (

@@ -38,7 +38,6 @@ export default function Certifications() {
             Live Certifications{" "}
             <span className="badge-live"><span className="pulse-dot" style={{ background: "#15803D" }}></span> Firebase-synced</span>
           </h2>
-          <p>Added from the admin panel — new certificates appear here instantly, no redeploy needed.</p>
         </div>
 
         <div className="edu-grid" data-aos="fade-up">

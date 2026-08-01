@@ -37,8 +37,7 @@ export default function Services() {
       <div className="wrap">
         <div className="section-head" data-aos="fade-up">
           <div className="tag">What I Do</div>
-          <h2>Three Ways I Deliver Value</h2>
-          <p>Managed from the admin panel — from pixel to pipeline to autonomous agent.</p>
+          <h2>The Ways I Deliver Value</h2>
         </div>
         <div className="panel3">
           {list.map((p, i) => (

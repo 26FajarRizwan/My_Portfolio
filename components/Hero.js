@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { User } from "lucide-react";
 
 export default function Hero() {
@@ -11,19 +12,13 @@ export default function Hero() {
         <div className="hero-grid">
           <div data-aos="fade-up" data-aos-duration="300">
             <div className="eyebrow"><span className="pulse-dot"></span> Open to work</div>
-            <h1>
-              Full-stack developer building fast, reliable products with{" "}
-              <span className="accent">Next.js</span>,{" "}
-              <span className="accent">FastAPI</span>, and agentic AI systems.
-            </h1>
+            <h1>Fajar Rizwan</h1>
             <p className="tagline">
-              I&apos;m Fajar Rizwan, a computer science student who enjoys taking a product from a rough
-              idea to something people can actually use — the frontend, the backend, and increasingly,
-              the AI systems that automate the parts in between.
+              Full-stack developer building fast, reliable products with Next.js, FastAPI and agentic AI systems.
             </p>
             <div className="hero-btns">
-              <a href="#projects" className="btn-primary">View my work</a>
-              <a href="#contact" className="btn-ghost">Get in touch</a>
+              <Link href="/projects" className="btn-primary">View my work</Link>
+              <Link href="/contact" className="btn-ghost">Get in touch</Link>
             </div>
           </div>
 

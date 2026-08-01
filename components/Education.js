@@ -37,7 +37,6 @@ export default function Education() {
         <div className="section-head" data-aos="fade-up">
           <div className="tag">Education</div>
           <h2>Academic Background</h2>
-          <p>Managed from the admin panel at <code className="mono">/admin</code>.</p>
         </div>
         <div className="edu-grid" data-aos="fade-up">
           {list.map((ed, i) => (

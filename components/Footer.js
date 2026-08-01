@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer>
@@ -11,16 +13,16 @@ export default function Footer() {
           </div>
           <div>
             <h4>Navigate</h4>
-            <a href="#about">About</a>
-            <a href="#experience">Experience</a>
-            <a href="#projects">Projects</a>
-            <a href="#contact">Contact</a>
+            <Link href="/about">About</Link>
+            <Link href="/experience">Experience</Link>
+            <Link href="/projects">Projects</Link>
+            <Link href="/contact">Contact</Link>
           </div>
           <div>
             <h4>Toolkit</h4>
-            <a href="#">Next.js &amp; React</a>
-            <a href="#">FastAPI &amp; Python</a>
-            <a href="#">CrewAI Agents</a>
+            <span style={{ display: "block", marginBottom: 9, fontSize: ".88rem" }}>Next.js &amp; React</span>
+            <span style={{ display: "block", marginBottom: 9, fontSize: ".88rem" }}>FastAPI &amp; Python</span>
+            <span style={{ display: "block", marginBottom: 9, fontSize: ".88rem" }}>CrewAI Agents</span>
           </div>
           <div>
             <h4>Connect</h4>
